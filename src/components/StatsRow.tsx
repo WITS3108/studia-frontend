@@ -12,6 +12,12 @@ export function StatsRow({
   studyStats: StudyStats;
 }) {
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  const record = useVisitRecord();
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const todayVisitSeconds = record.dailySeconds[todayKey] || 0;
+
   const studyGoalPercent = Math.min(
     100,
     Math.round((todayVisitSeconds / DAILY_VISIT_GOAL_SECONDS) * 100),
@@ -23,11 +29,6 @@ export function StatsRow({
         studied: false,
         is_today: false,
       }));
-
-  const record = useVisitRecord();
-  const now = new Date();
-  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  const todayVisitSeconds = record.dailySeconds[todayKey] || 0;
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
