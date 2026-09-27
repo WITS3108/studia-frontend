@@ -32,23 +32,73 @@ export const Route = createFileRoute("/_authenticated/")({
   component: HomePage,
 });
 
-function VisitTimeCard() {
+function DailyVisitProgress() {
   const record = useVisitRecord();
+
+  const days = Array.from({ length: 7 }, (_, idx) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - idx));
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const key = `${y}-${m}-${dd}`;
+    return {
+      key,
+      label: d.toLocaleDateString("vi-VN", { weekday: "short" }),
+      seconds: record.dailySeconds[key] || 0,
+      is_today: idx === 6,
+    };
+  });
+
+  const max = Math.max(...days.map((d) => d.seconds / 3600), 1);
+
   return (
-    <div className="card-soft animate-fade-up p-5" style={{ animationDelay: "260ms" }}>
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-bold text-muted-foreground">Thời gian truy cập</span>
-        <Timer className="h-4 w-4 text-primary" />
+    <section className="card-soft animate-fade-up p-5" style={{ animationDelay: "80ms" }}>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-base font-black text-foreground">Tiến độ thường ngày</h2>
+          <p className="mt-0.5 text-xs font-medium text-muted-foreground">
+            Tổng {formatStudyTime(record.totalSeconds)} truy cập · Gần nhất{" "}
+            {record.lastVisit ? new Date(record.lastVisit).toLocaleString("vi-VN") : "—"}
+          </p>
+        </div>
+        <span className="rounded-full bg-primary/10 p-2 text-primary">
+          <Timer className="h-4 w-4" />
+        </span>
       </div>
-      <div className="mt-3 flex items-end gap-2">
-        <span className="text-3xl font-black text-foreground">{formatStudyTime(record.totalSeconds)}</span>
-        <span className="pb-1 text-xs font-bold text-muted-foreground">tổng cộng</span>
+
+      <div className="mt-5 flex h-36 items-end gap-2">
+        {days.map((day, i) => {
+          const hours = day.seconds / 3600;
+          const height = hours === 0 ? 4 : Math.max(5, Math.round((hours / max) * 100));
+          return (
+            <div key={day.key} className="flex h-full flex-1 flex-col items-center gap-2">
+              <span className="text-[10px] font-bold text-muted-foreground">
+                {hours > 0 ? `${hours.toFixed(1)}h` : "--"}
+              </span>
+              <div className="relative w-full flex-1">
+                <div
+                  className="animate-grow-bar absolute bottom-0 left-0 w-full origin-bottom rounded-t-xl transition-colors"
+                  style={{
+                    height: `${height}%`,
+                    animationDelay: `${i * 70}ms`,
+                    backgroundColor: day.is_today
+                      ? "var(--color-primary-deep)"
+                      : hours > 0
+                        ? "var(--color-primary)"
+                        : "var(--color-muted)",
+                    opacity: hours > 0 ? 1 : 0.6,
+                  }}
+                />
+              </div>
+              <span className={`text-[11px] font-bold ${day.is_today ? "text-primary-deep" : "text-muted-foreground"}`}>
+                {day.label}
+              </span>
+            </div>
+          );
+        })}
       </div>
-      <p className="mt-2 text-xs font-medium text-muted-foreground">
-        Lần truy cập gần nhất:{" "}
-        {record.lastVisit ? new Date(record.lastVisit).toLocaleString("vi-VN") : "—"}
-      </p>
-    </div>
+    </section>
   );
 }
 
@@ -91,7 +141,7 @@ function HomePage() {
 
           {/* Right column: weekly progress on top of pomodoro */}
           <div className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
-            <VisitTimeCard />
+            <DailyVisitProgress />
             <WeeklyProgress studyStats={studyStats} />
             <PomodoroPanel onStudyTimeRecorded={recordStudyTime} />
           </div>

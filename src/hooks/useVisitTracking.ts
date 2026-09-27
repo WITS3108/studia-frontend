@@ -7,6 +7,7 @@ export type VisitRecord = {
   lastVisit: string; // ISO datetime of the most recent visit
   totalSeconds: number; // total time spent on the site
   visitedDays: string[]; // distinct visit dates (YYYY-MM-DD)
+  dailySeconds: Record<string, number>; // date (YYYY-MM-DD) -> seconds on site
 };
 
 function localDateString(date: Date) {
@@ -17,7 +18,7 @@ function localDateString(date: Date) {
 }
 
 function emptyRecord(): VisitRecord {
-  return { firstVisit: "", lastVisit: "", totalSeconds: 0, visitedDays: [] };
+  return { firstVisit: "", lastVisit: "", totalSeconds: 0, visitedDays: [], dailySeconds: {} };
 }
 
 function loadRecord(): VisitRecord {
@@ -31,6 +32,10 @@ function loadRecord(): VisitRecord {
       lastVisit: typeof parsed.lastVisit === "string" ? parsed.lastVisit : "",
       totalSeconds: typeof parsed.totalSeconds === "number" ? parsed.totalSeconds : 0,
       visitedDays: Array.isArray(parsed.visitedDays) ? parsed.visitedDays : [],
+      dailySeconds:
+        parsed.dailySeconds && typeof parsed.dailySeconds === "object"
+          ? (parsed.dailySeconds as Record<string, number>)
+          : {},
     };
   } catch {
     return emptyRecord();
@@ -109,6 +114,8 @@ export function useVisitTracking() {
       const delta = Math.floor((nowMs - lastTick) / 1000);
       if (delta > 0) {
         r.totalSeconds += delta;
+        const today = localDateString(new Date());
+        r.dailySeconds[today] = (r.dailySeconds[today] || 0) + delta;
         lastTick = nowMs;
         saveRecord(r);
       }
