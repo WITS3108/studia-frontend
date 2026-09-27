@@ -7,6 +7,7 @@ export function StatsRow({ done, total }: { done: number; total: number }) {
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
   const record = useVisitRecord();
+  const visitedSet = new Set(record.visitedDays);
   const visitDays = Array.from({ length: 7 }, (_, idx) => {
     const d = new Date();
     d.setDate(d.getDate() - (6 - idx));
@@ -19,7 +20,7 @@ export function StatsRow({ done, total }: { done: number; total: number }) {
       key,
       label: d.toLocaleDateString("vi-VN", { weekday: "short" }),
       seconds,
-      visited: seconds > 0,
+      visited: visitedSet.has(key),
       is_today: idx === 6,
     };
   });
