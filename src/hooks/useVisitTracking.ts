@@ -10,6 +10,9 @@ export type VisitRecord = {
   dailySeconds: Record<string, number>; // date (YYYY-MM-DD) -> seconds on site
 };
 
+// Mốc tham chiếu cho biểu đồ ngày: 8 giờ/ngày = 100%.
+export const DAILY_VISIT_GOAL_SECONDS = 8 * 3600;
+
 function localDateString(date: Date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");

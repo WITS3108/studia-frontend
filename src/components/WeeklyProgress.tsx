@@ -1,6 +1,6 @@
 import { TrendingUp } from "lucide-react";
 import { formatStudyTime } from "@/hooks/useStudyStats";
-import { useVisitRecord } from "@/hooks/useVisitTracking";
+import { useVisitRecord, DAILY_VISIT_GOAL_SECONDS } from "@/hooks/useVisitTracking";
 
 export function WeeklyProgress() {
   const record = useVisitRecord();
@@ -20,9 +20,8 @@ export function WeeklyProgress() {
     };
   });
 
-  const max = Math.max(...days.map((day) => day.seconds / 3600), 1);
-  const activeCount = days.filter((day) => day.seconds > 0).length;
   const weekSeconds = days.reduce((sum, day) => sum + day.seconds, 0);
+  const activeCount = days.filter((day) => day.seconds > 0).length;
 
   return (
     <section className="card-soft animate-fade-up p-5" style={{ animationDelay: "80ms" }}>
@@ -42,11 +41,15 @@ export function WeeklyProgress() {
       <div className="mt-5 flex h-36 items-end gap-2">
         {days.map((day, i) => {
           const hours = day.seconds / 3600;
-          const height = hours === 0 ? 4 : Math.max(5, Math.round((hours / max) * 100));
+          const percent = Math.min(100, Math.round((day.seconds / DAILY_VISIT_GOAL_SECONDS) * 100));
+          const height = day.seconds === 0 ? 0 : Math.max(8, percent);
           return (
             <div key={day.key} className="flex h-full flex-1 flex-col items-center gap-2">
-              <span className="text-[10px] font-bold text-muted-foreground">
-                {hours > 0 ? `${hours.toFixed(1)}h` : "--"}
+              <span
+                className="text-[10px] font-bold text-muted-foreground"
+                title={`${hours.toFixed(1)} giờ`}
+              >
+                {day.seconds > 0 ? `${percent}%` : "--"}
               </span>
               <div className="relative w-full flex-1">
                 <div

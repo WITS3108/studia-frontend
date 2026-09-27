@@ -10,7 +10,7 @@ import { TodayTodos } from "@/components/TodayTodos";
 import { PomodoroPanel } from "@/components/PomodoroPanel";
 import { useTodos } from "@/hooks/useTodos";
 import { useStudyStats, formatStudyTime } from "@/hooks/useStudyStats";
-import { useVisitRecord } from "@/hooks/useVisitTracking";
+import { useVisitRecord, DAILY_VISIT_GOAL_SECONDS } from "@/hooks/useVisitTracking";
 import { quotes } from "@/data/mock";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -50,8 +50,6 @@ function DailyVisitProgress() {
     };
   });
 
-  const max = Math.max(...days.map((d) => d.seconds / 3600), 1);
-
   return (
     <section className="card-soft animate-fade-up p-5" style={{ animationDelay: "80ms" }}>
       <div className="flex items-start justify-between">
@@ -70,11 +68,12 @@ function DailyVisitProgress() {
       <div className="mt-5 flex h-36 items-end gap-2">
         {days.map((day, i) => {
           const hours = day.seconds / 3600;
-          const height = hours === 0 ? 4 : Math.max(5, Math.round((hours / max) * 100));
+          const percent = Math.min(100, Math.round((day.seconds / DAILY_VISIT_GOAL_SECONDS) * 100));
+          const height = day.seconds === 0 ? 0 : Math.max(8, percent);
           return (
             <div key={day.key} className="flex h-full flex-1 flex-col items-center gap-2">
-              <span className="text-[10px] font-bold text-muted-foreground">
-                {hours > 0 ? `${hours.toFixed(1)}h` : "--"}
+              <span className="text-[10px] font-bold text-muted-foreground" title={`${hours.toFixed(1)} giờ`}>
+                {day.seconds > 0 ? `${percent}%` : "--"}
               </span>
               <div className="relative w-full flex-1">
                 <div
