@@ -100,7 +100,6 @@ function SettingsPage() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isGoogleConnected, setIsGoogleConnected] = useState(true);
 
   // Ref Upload Avatar
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -568,43 +567,6 @@ function SettingsPage() {
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div className="card-soft p-6 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-muted border border-border flex items-center justify-center font-black text-primary">
-                  G
-                </div>
-                <div>
-                  <h3 className="text-sm font-extrabold text-card-foreground">
-                    Liên kết Google Workspace
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Cho phép đăng nhập nhanh qua tài khoản Google của bạn.
-                  </p>
-                </div>
-              </div>
-
-              {isGoogleConnected ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-success bg-success/10 px-3 py-1.5 rounded-full border border-success/20 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Đã kết nối
-                  </span>
-                  <button
-                    onClick={() => setIsGoogleConnected(false)}
-                    className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Hủy kết nối
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setIsGoogleConnected(true)}
-                  className="btn-press bg-secondary text-secondary-foreground text-xs font-bold px-4 py-2 rounded-xl border border-border"
-                >
-                  Kết nối tài khoản
-                </button>
-              )}
             </div>
           </div>
         )}
