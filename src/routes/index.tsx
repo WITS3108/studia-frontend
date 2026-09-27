@@ -70,7 +70,7 @@ function HomePage() {
 
           {/* Right column: weekly progress on top of pomodoro */}
           <div className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
-            <WeeklyProgress studyStats={studyStats} />
+            <WeeklyProgress />
             <PomodoroPanel onStudyTimeRecorded={recordStudyTime} />
           </div>
         </div>
