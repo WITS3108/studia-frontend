@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { todos, toggle } = useTodos();
-  const { stats: studyStats, recordStudyTime } = useStudyStats();
+  const { recordStudyTime } = useStudyStats();
   const done = todos.filter((t) => t.done).length;
   const quote = useMemo(() => quotes[new Date().getDay() % quotes.length], []);
 
@@ -63,7 +63,7 @@ function HomePage() {
               </p>
             </header>
 
-            <StatsRow done={done} total={todos.length} studyStats={studyStats} />
+            <StatsRow done={done} total={todos.length} />
             <FlashcardDecks />
             <TodayTodos todos={todos} onToggle={toggle} />
           </div>

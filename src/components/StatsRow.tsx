@@ -1,38 +1,37 @@
-import { CheckCircle2, Clock, Flame } from "lucide-react";
-import { formatStudyTime, type StudyStats } from "@/hooks/useStudyStats";
+import { Check, CheckCircle2, Clock, Flame } from "lucide-react";
+import { formatStudyTime } from "@/hooks/useStudyStats";
 import { getVisitStreak, useVisitRecord } from "@/hooks/useVisitTracking";
 import { getDailyGoalSeconds, getDailyGoalHours } from "@/lib/dailyGoal";
 
-export function StatsRow({
-  done,
-  total,
-  studyStats,
-}: {
-  done: number;
-  total: number;
-  studyStats: StudyStats;
-}) {
+export function StatsRow({ done, total }: { done: number; total: number }) {
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
   const record = useVisitRecord();
-  const now = new Date();
-  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  const todayVisitSeconds = record.dailySeconds[todayKey] || 0;
+  const visitDays = Array.from({ length: 7 }, (_, idx) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - idx));
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const key = `${y}-${m}-${dd}`;
+    const seconds = record.dailySeconds[key] || 0;
+    return {
+      key,
+      label: d.toLocaleDateString("vi-VN", { weekday: "short" }),
+      seconds,
+      visited: seconds > 0,
+      is_today: idx === 6,
+    };
+  });
+
+  const todayVisitSeconds = visitDays[6].seconds;
   const dailyGoalSeconds = getDailyGoalSeconds();
   const dailyGoalHours = getDailyGoalHours();
   const goalReached = todayVisitSeconds >= dailyGoalSeconds;
-
   const studyGoalPercent = Math.min(
     100,
     Math.round((todayVisitSeconds / dailyGoalSeconds) * 100),
   );
-  const week = studyStats.week.length
-    ? studyStats.week
-    : ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((label) => ({
-        label,
-        studied: false,
-        is_today: false,
-      }));
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -68,15 +67,21 @@ export function StatsRow({
           <span className="pb-1 text-xs font-bold text-muted-foreground">ngày liên tục</span>
         </div>
         <div className="mt-4 flex gap-1.5">
-          {week.map((day) => (
-            <div key={day.label} className="flex flex-1 flex-col items-center gap-1">
+          {visitDays.map((day) => (
+            <div key={day.key} className="flex flex-1 flex-col items-center gap-1">
               <span
-                title={day.studied ? "Đã đạt mốc học trong ngày" : "Chưa đạt mốc học trong ngày"}
-                className={`h-7 w-full rounded-lg transition-colors ${
-                  day.studied ? "bg-primary" : "bg-muted"
+                title={day.visited ? "Đã truy cập trong ngày" : "Chưa truy cập trong ngày"}
+                className={`grid h-7 w-full place-items-center rounded-lg border transition-colors ${
+                  day.visited
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-muted text-transparent"
                 }`}
-              />
-              <span className={`text-[10px] font-bold ${day.is_today ? "text-primary" : "text-muted-foreground"}`}>
+              >
+                <Check className="h-3.5 w-3.5" strokeWidth={3} />
+              </span>
+              <span
+                className={`text-[10px] font-bold ${day.is_today ? "text-primary" : "text-muted-foreground"}`}
+              >
                 {day.label}
               </span>
             </div>
