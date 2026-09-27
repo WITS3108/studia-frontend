@@ -20,6 +20,7 @@ export function StatsRow({
   const todayVisitSeconds = record.dailySeconds[todayKey] || 0;
   const dailyGoalSeconds = getDailyGoalSeconds();
   const dailyGoalHours = getDailyGoalHours();
+  const goalReached = todayVisitSeconds >= dailyGoalSeconds;
 
   const studyGoalPercent = Math.min(
     100,
@@ -86,7 +87,15 @@ export function StatsRow({
       <div className="card-soft animate-fade-up p-5 sm:col-span-2 xl:col-span-1" style={{ animationDelay: "220ms" }}>
         <div className="flex items-center justify-between">
           <span className="text-sm font-bold text-muted-foreground">Giờ học hôm nay</span>
-          <Clock className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-2">
+            {goalReached && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-600">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Đã hoàn thành
+              </span>
+            )}
+            <Clock className="h-4 w-4 text-primary" />
+          </div>
         </div>
         <div className="mt-3 flex items-end gap-2">
           <span className="text-3xl font-black text-foreground">
@@ -94,8 +103,8 @@ export function StatsRow({
           </span>
         </div>
         <p className="mt-4 text-xs font-medium text-muted-foreground">
-          {todayVisitSeconds >= dailyGoalSeconds
-            ? `Đã đạt mốc ${dailyGoalHours} giờ truy cập hôm nay.`
+          {goalReached
+            ? `🎉 Hoàn thành mục tiêu ${dailyGoalHours} giờ truy cập hôm nay.`
             : `Còn ${formatStudyTime(dailyGoalSeconds - todayVisitSeconds)} để đạt ${dailyGoalHours} giờ truy cập hôm nay.`}
         </p>
         <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-muted">
