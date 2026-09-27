@@ -6,8 +6,6 @@ import { updateProfile, uploadAvatar } from "@/lib/auth";
 import {
   Camera,
   Calendar,
-  LogOut,
-  Trash2,
   CheckCircle2,
   AlertTriangle,
   Flame,
@@ -101,10 +99,6 @@ function SettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isGoogleConnected, setIsGoogleConnected] = useState(true);
-
-  // Modal xác nhận
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Ref Upload Avatar
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -600,107 +594,11 @@ function SettingsPage() {
                 </button>
               )}
             </div>
-
-            <div className="bg-destructive/10 border border-destructive/20 rounded-3xl p-6 shadow-xl flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-extrabold text-destructive flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" /> Quyền truy cập & Dữ liệu
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Đăng xuất tài khoản khỏi thiết bị hoặc yêu cầu xóa toàn bộ dữ liệu cá nhân.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="btn-press flex items-center gap-2 bg-card text-foreground border border-border px-4 py-2 rounded-xl text-xs font-bold shadow-sm"
-                >
-                  <LogOut className="w-3.5 h-3.5" /> Đăng xuất
-                </button>
-
-                <button
-                  onClick={() => setShowDeleteModal(true)}
-                  className="btn-press flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 rounded-xl text-xs font-bold shadow-sm"
-                >
-                  <Trash2 className="w-3.5 h-3.5" /> Xóa tài khoản
-                </button>
-              </div>
-            </div>
           </div>
         )}
       </div>
 
-      {/* MODALS */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
-            <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-              <LogOut className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-card-foreground">
-                Xác nhận đăng xuất?
-              </h3>
-              <p className="text-xs text-muted-foreground mt-1">
-                Bạn có chắc chắn muốn kết thúc phiên đăng nhập này?
-              </p>
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setShowLogoutModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-muted text-muted-foreground hover:bg-muted/80"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={() => {
-                  setShowLogoutModal(false);
-                  alert("Đã đăng xuất thành công!");
-                }}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-destructive text-destructive-foreground shadow-sm"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border border-destructive/40 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
-            <div className="w-10 h-10 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center border border-destructive/20">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-destructive">
-                Xóa vĩnh viễn tài khoản?
-              </h3>
-              <p className="text-xs text-muted-foreground mt-1">
-                Mọi bộ thẻ Flashcard và tiến độ Streak học tập của bạn sẽ bị hủy bỏ hoàn toàn.
-              </p>
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-muted text-muted-foreground hover:bg-muted/80"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  alert("Tài khoản đã bị xóa!");
-                }}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-destructive text-destructive-foreground shadow-sm"
-              >
-                Xác nhận xóa
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </AppShell>
   );
 }

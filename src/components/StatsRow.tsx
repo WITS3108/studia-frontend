@@ -1,6 +1,6 @@
 import { CheckCircle2, Clock, Flame } from "lucide-react";
 import { formatStudyTime, type StudyStats } from "@/hooks/useStudyStats";
-import { getVisitStreak } from "@/hooks/useVisitTracking";
+import { getVisitStreak, useVisitRecord, DAILY_VISIT_GOAL_SECONDS } from "@/hooks/useVisitTracking";
 
 export function StatsRow({
   done,
@@ -14,7 +14,7 @@ export function StatsRow({
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
   const studyGoalPercent = Math.min(
     100,
-    Math.round((studyStats.today_seconds / studyStats.streak_goal_seconds) * 100),
+    Math.round((todayVisitSeconds / DAILY_VISIT_GOAL_SECONDS) * 100),
   );
   const week = studyStats.week.length
     ? studyStats.week
@@ -23,6 +23,11 @@ export function StatsRow({
         studied: false,
         is_today: false,
       }));
+
+  const record = useVisitRecord();
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const todayVisitSeconds = record.dailySeconds[todayKey] || 0;
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -81,13 +86,13 @@ export function StatsRow({
         </div>
         <div className="mt-3 flex items-end gap-2">
           <span className="text-3xl font-black text-foreground">
-            {formatStudyTime(studyStats.today_seconds)}
+            {formatStudyTime(todayVisitSeconds)}
           </span>
         </div>
         <p className="mt-4 text-xs font-medium text-muted-foreground">
-          {studyStats.today_seconds >= studyStats.streak_goal_seconds
-            ? "Đã đạt mốc 15 phút để giữ chuỗi hôm nay."
-            : `Còn ${formatStudyTime(studyStats.streak_goal_seconds - studyStats.today_seconds)} để giữ chuỗi hôm nay.`}
+          {todayVisitSeconds >= DAILY_VISIT_GOAL_SECONDS
+            ? "Đã đạt mốc 8 giờ truy cập hôm nay."
+            : `Còn ${formatStudyTime(DAILY_VISIT_GOAL_SECONDS - todayVisitSeconds)} để đạt 8 giờ truy cập hôm nay.`}
         </p>
         <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-muted">
           <div

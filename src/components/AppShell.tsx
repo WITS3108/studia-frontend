@@ -1,6 +1,6 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Brain, Flame, GraduationCap, Home, Layers, ListTodo, LogOut, Search, Settings, User } from "lucide-react";
+import { Brain, Flame, GraduationCap, Home, Layers, ListTodo, Search, Settings, User } from "lucide-react";
 
 import { ThemeToggle } from "./ThemeToggle";
 import { getVisitStreak } from "@/hooks/useVisitTracking";
@@ -16,8 +16,7 @@ const navItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,18 +61,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                   )}
                   <span className="max-w-[140px] truncate">{user.username}</span>
                 </Link>
-                <button
-                  type="button"
-                  title="Đăng xuất"
-                  aria-label="Đăng xuất"
-                  onClick={async () => {
-                    await logout();
-                    navigate({ to: "/login" });
-                  }}
-                  className="btn-press grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
               </div>
             ) : (
               <>
