@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "learnfast-visit";
 
@@ -48,6 +48,22 @@ function saveRecord(record: VisitRecord) {
 
 export function getVisitRecord(): VisitRecord {
   return loadRecord();
+}
+
+/**
+ * Reactive visit record for the UI — refreshes periodically so the total
+ * time on site keeps updating while the user stays on the page.
+ */
+export function useVisitRecord(): VisitRecord {
+  const [record, setRecord] = useState<VisitRecord>(loadRecord);
+
+  useEffect(() => {
+    setRecord(loadRecord());
+    const interval = window.setInterval(() => setRecord(loadRecord()), 15000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return record;
 }
 
 /**

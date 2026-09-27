@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Timer } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { StatsRow } from "@/components/StatsRow";
@@ -9,7 +9,8 @@ import { FlashcardDecks } from "@/components/FlashcardDecks";
 import { TodayTodos } from "@/components/TodayTodos";
 import { PomodoroPanel } from "@/components/PomodoroPanel";
 import { useTodos } from "@/hooks/useTodos";
-import { useStudyStats } from "@/hooks/useStudyStats";
+import { useStudyStats, formatStudyTime } from "@/hooks/useStudyStats";
+import { useVisitRecord } from "@/hooks/useVisitTracking";
 import { quotes } from "@/data/mock";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -30,6 +31,26 @@ export const Route = createFileRoute("/_authenticated/")({
   }),
   component: HomePage,
 });
+
+function VisitTimeCard() {
+  const record = useVisitRecord();
+  return (
+    <div className="card-soft animate-fade-up p-5" style={{ animationDelay: "260ms" }}>
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-muted-foreground">Thời gian truy cập</span>
+        <Timer className="h-4 w-4 text-primary" />
+      </div>
+      <div className="mt-3 flex items-end gap-2">
+        <span className="text-3xl font-black text-foreground">{formatStudyTime(record.totalSeconds)}</span>
+        <span className="pb-1 text-xs font-bold text-muted-foreground">tổng cộng</span>
+      </div>
+      <p className="mt-2 text-xs font-medium text-muted-foreground">
+        Lần truy cập gần nhất:{" "}
+        {record.lastVisit ? new Date(record.lastVisit).toLocaleString("vi-VN") : "—"}
+      </p>
+    </div>
+  );
+}
 
 function HomePage() {
   const { todos, toggle } = useTodos();
@@ -70,6 +91,7 @@ function HomePage() {
 
           {/* Right column: weekly progress on top of pomodoro */}
           <div className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
+            <VisitTimeCard />
             <WeeklyProgress studyStats={studyStats} />
             <PomodoroPanel onStudyTimeRecorded={recordStudyTime} />
           </div>
