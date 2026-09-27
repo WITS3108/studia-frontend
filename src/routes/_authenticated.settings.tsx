@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import { updateProfile, uploadAvatar } from "@/lib/auth";
+import { getDailyGoalHours, saveDailyGoalHours } from "@/lib/dailyGoal";
 import {
   Camera,
   Calendar,
@@ -90,9 +91,10 @@ function SettingsPage() {
   };
 
   // State Mục tiêu học tập
-  const [dailyHours, setDailyHours] = useState<number>(4.0);
+  const [dailyHours, setDailyHours] = useState<number>(() => getDailyGoalHours());
   const [quizTarget, setQuizTarget] = useState<number>(20);
   const [streakTargetDays, setStreakTargetDays] = useState<number>(30);
+  const [goalSaved, setGoalSaved] = useState(false);
 
   // State Bảo mật
   const [oldPassword, setOldPassword] = useState("");
@@ -480,8 +482,18 @@ function SettingsPage() {
               </div>
             </div>
 
-            <div className="flex justify-end pt-2">
-              <button className="btn-press flex items-center gap-2 bg-primary text-primary-foreground font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg">
+            <div className="flex items-center justify-end gap-3 pt-2">
+              {goalSaved && (
+                <span className="text-xs font-bold text-emerald-600">Đã lưu mục tiêu!</span>
+              )}
+              <button
+                onClick={() => {
+                  saveDailyGoalHours(dailyHours);
+                  setGoalSaved(true);
+                  window.setTimeout(() => setGoalSaved(false), 2000);
+                }}
+                className="btn-press flex items-center gap-2 bg-primary text-primary-foreground font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg"
+              >
                 <Save className="w-4 h-4" /> Lưu mục tiêu
               </button>
             </div>

@@ -1,6 +1,7 @@
 import { CheckCircle2, Clock, Flame } from "lucide-react";
 import { formatStudyTime, type StudyStats } from "@/hooks/useStudyStats";
-import { getVisitStreak, useVisitRecord, DAILY_VISIT_GOAL_SECONDS } from "@/hooks/useVisitTracking";
+import { getVisitStreak, useVisitRecord } from "@/hooks/useVisitTracking";
+import { getDailyGoalSeconds, getDailyGoalHours } from "@/lib/dailyGoal";
 
 export function StatsRow({
   done,
@@ -17,10 +18,12 @@ export function StatsRow({
   const now = new Date();
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const todayVisitSeconds = record.dailySeconds[todayKey] || 0;
+  const dailyGoalSeconds = getDailyGoalSeconds();
+  const dailyGoalHours = getDailyGoalHours();
 
   const studyGoalPercent = Math.min(
     100,
-    Math.round((todayVisitSeconds / DAILY_VISIT_GOAL_SECONDS) * 100),
+    Math.round((todayVisitSeconds / dailyGoalSeconds) * 100),
   );
   const week = studyStats.week.length
     ? studyStats.week
@@ -91,9 +94,9 @@ export function StatsRow({
           </span>
         </div>
         <p className="mt-4 text-xs font-medium text-muted-foreground">
-          {todayVisitSeconds >= DAILY_VISIT_GOAL_SECONDS
-            ? "Đã đạt mốc 8 giờ truy cập hôm nay."
-            : `Còn ${formatStudyTime(DAILY_VISIT_GOAL_SECONDS - todayVisitSeconds)} để đạt 8 giờ truy cập hôm nay.`}
+          {todayVisitSeconds >= dailyGoalSeconds
+            ? `Đã đạt mốc ${dailyGoalHours} giờ truy cập hôm nay.`
+            : `Còn ${formatStudyTime(dailyGoalSeconds - todayVisitSeconds)} để đạt ${dailyGoalHours} giờ truy cập hôm nay.`}
         </p>
         <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-muted">
           <div

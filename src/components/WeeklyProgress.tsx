@@ -1,6 +1,7 @@
 import { TrendingUp } from "lucide-react";
 import { formatStudyTime } from "@/hooks/useStudyStats";
-import { useVisitRecord, DAILY_VISIT_GOAL_SECONDS } from "@/hooks/useVisitTracking";
+import { useVisitRecord } from "@/hooks/useVisitTracking";
+import { getDailyGoalSeconds } from "@/lib/dailyGoal";
 
 export function WeeklyProgress() {
   const record = useVisitRecord();
@@ -41,7 +42,7 @@ export function WeeklyProgress() {
       <div className="mt-5 flex h-36 items-end gap-2">
         {days.map((day, i) => {
           const hours = day.seconds / 3600;
-          const percent = Math.min(100, Math.round((day.seconds / DAILY_VISIT_GOAL_SECONDS) * 100));
+          const percent = Math.min(100, Math.round((day.seconds / getDailyGoalSeconds()) * 100));
           const height = day.seconds === 0 ? 0 : Math.max(8, percent);
           return (
             <div key={day.key} className="flex h-full flex-1 flex-col items-center gap-2">
